@@ -1,0 +1,8 @@
+LOAD 1 1000
+LOAD 2 1004
+ADD 0 1 2
+STORE 0 900      
+HALT  
+
+    
+
