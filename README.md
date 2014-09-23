@@ -6,7 +6,7 @@ A small virtual machine that runs custom bytecode.
 Still being heavily worked on. For fun.
 
 How it works:
-- reads the source file, parses it and converts it into bytecode
+- reads the source file from STDIN, parses it and converts it into bytecode
 - bytecode (a set of instructions) is then loaded into the virtual machine's memory
 - virtual machine attempts to execute commands in a manner real chips do
 
