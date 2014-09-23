@@ -3,8 +3,6 @@ Tiny-Virtual-Machine
 
 A small virtual machine that runs custom bytecode.
 
-![Alt text](/screenshot.png?raw=true "Screenshot")
-
 Still being heavily worked on. For fun.
 
 How it works:
