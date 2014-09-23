@@ -183,6 +183,52 @@ void VirtualMachine::ParseInstruction(char type, unsigned int argument_address)
 
 			break;
 		}	
+		case INS_SHL: case INS_SHR:
+		{
+			if(pc + 3 >= MEMORY_SIZE)
+			{
+				halt_signal = HS_OUT_BOUNDS;
+				break;
+			}
+
+			char register_src;
+			char register_dest;
+			char shift_amount;
+
+			try
+			{
+				register_src = GetByte(argument_address);			
+				shift_amount = GetByte(argument_address+1);
+				register_dest = GetByte(argument_address+2);				
+			}
+			catch(BytecodeException exception)
+			{
+				halt_signal = exception.code;
+				break;
+			}
+
+			if(register_src < 0 || register_src >= NUM_REGISTERS
+				|| register_dest < 0 || register_dest >= NUM_REGISTERS)
+			{
+				halt_signal = HS_OUT_BOUNDS;
+				break;
+			}
+
+			if(type == INS_SHL)
+			{
+				registers[register_dest] = registers[register_src] << shift_amount;
+				//std::cout << "ADD R" << register_1 << ", R" << register_2, << ", R" << register_3 << std::endl;
+			}
+			else
+			{
+				registers[register_dest] = registers[register_src] >> shift_amount;
+				//std::cout << "SUB R" << register_1 << ", R" << register_2, << ", R" << register_3 << std::endl;
+			}
+
+			pc += 4;
+
+			break;
+		}	
 		case INS_HALT:
 		{
 			halt_signal = HS_USER;

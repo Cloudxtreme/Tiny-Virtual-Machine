@@ -12,6 +12,8 @@
 #define INS_STORE 2
 #define INS_ADD 3
 #define INS_SUB 4
+#define INS_SHL 5
+#define INS_SHR 6
 
 #define HS_USER 1
 #define HS_OUT_BOUNDS 2

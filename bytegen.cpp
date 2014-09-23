@@ -75,6 +75,14 @@ BytecodeGenerator::BytecodeGenerator()
 		{
 			instruction_type = INS_SUB;
 		}
+		else if (tokens[0].compare("SHL") == 0)
+		{
+			instruction_type = INS_SHL;
+		}
+		else if (tokens[0].compare("SHR") == 0)
+		{
+			instruction_type = INS_SHR;
+		}
 		else if (tokens[0].compare("HALT") == 0)
 		{
 			instruction_type = INS_HALT;
@@ -122,7 +130,22 @@ BytecodeGenerator::BytecodeGenerator()
 					bytes.push_back(register_index[i]);	
 				}
 				break;
-			}		
+			}	
+			case INS_SHL: case INS_SHR:
+			{
+				if(tokens.size() != 3 + 1)
+					throw SourceException(EXCEPTION_INVALID_ARGUMENTS, line_number);						
+
+				char register_src = atoi(tokens[1].c_str());
+				char shift_amount = atoi(tokens[2].c_str());
+				char register_dest = atoi(tokens[3].c_str());
+				
+				bytes.push_back(register_src);	
+				bytes.push_back(shift_amount);	
+				bytes.push_back(register_dest);	
+				
+				break;
+			}
 			case INS_HALT:
 			{
 				if(tokens.size() != 1)
