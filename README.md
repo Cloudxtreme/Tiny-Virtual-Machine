@@ -12,6 +12,12 @@ How it works:
 
 If something bad happens, like trying to read from a memory address that is out of bounds, or writing to a register that doesn't exist, a halt signal is generated and the virtual machine stops bytecode execution.
 
+v0.02
+===================
+- added register shifting instructions SHR and SHL
+
+v0.01
+===================
 Current features:
 - LOAD, STORE, ADD, SUB and HALT commands
 - source file parsing and conversion into bytecode
