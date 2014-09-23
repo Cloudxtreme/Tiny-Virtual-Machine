@@ -229,6 +229,30 @@ void VirtualMachine::ParseInstruction(char type, unsigned int argument_address)
 
 			break;
 		}	
+		case INS_JMP:
+		{
+			if(pc + 1 >= MEMORY_SIZE)
+			{
+				halt_signal = HS_OUT_BOUNDS;
+				break;
+			}
+
+			unsigned int address;
+
+			try
+			{
+				address = GetWord(argument_address);				
+			}
+			catch(BytecodeException exception)
+			{
+				halt_signal = exception.code;
+				break;
+			}				
+
+			pc = address;
+
+			break;
+		}
 		case INS_HALT:
 		{
 			halt_signal = HS_USER;

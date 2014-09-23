@@ -83,6 +83,10 @@ BytecodeGenerator::BytecodeGenerator()
 		{
 			instruction_type = INS_SHR;
 		}
+		else if (tokens[0].compare("JMP") == 0)
+		{
+			instruction_type = INS_JMP;
+		}
 		else if (tokens[0].compare("HALT") == 0)
 		{
 			instruction_type = INS_HALT;
@@ -143,6 +147,20 @@ BytecodeGenerator::BytecodeGenerator()
 				bytes.push_back(register_src);	
 				bytes.push_back(shift_amount);	
 				bytes.push_back(register_dest);	
+				
+				break;
+			}
+			case INS_JMP: 
+			{
+				if(tokens.size() != 1 + 1)
+					throw SourceException(EXCEPTION_INVALID_ARGUMENTS, line_number);						
+
+				unsigned int address = atoi(tokens[1].c_str());				
+				
+				bytes.push_back(address); 
+				bytes.push_back(address >> 8); 
+				bytes.push_back(address >> 16);
+				bytes.push_back(address >> 24);				
 				
 				break;
 			}
