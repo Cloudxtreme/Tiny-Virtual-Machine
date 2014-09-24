@@ -90,6 +90,10 @@ BytecodeGenerator::BytecodeGenerator()
 		{
 			instruction_type = INS_JMP;
 		}
+		else if (tokens[0].compare("CMP") == 0)
+		{
+			instruction_type = INS_CMP;
+		}
 		else if (tokens[0].compare("HALT") == 0)
 		{
 			instruction_type = INS_HALT;
@@ -158,6 +162,19 @@ BytecodeGenerator::BytecodeGenerator()
 				bytes.push_back(register_src);	
 				bytes.push_back(shift_amount);	
 				bytes.push_back(register_dest);	
+				
+				break;
+			}
+			case INS_CMP:
+			{
+				if(tokens.size() != 2 + 1)
+					throw SourceException(EXCEPTION_INVALID_ARGUMENTS, line_number);						
+
+				char register_1 = atoi(tokens[1].c_str());
+				char register_2 = atoi(tokens[2].c_str());				
+				
+				bytes.push_back(register_1);	
+				bytes.push_back(register_2);
 				
 				break;
 			}

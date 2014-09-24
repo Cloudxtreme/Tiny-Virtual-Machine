@@ -30,6 +30,7 @@ To do:
 ###v0.02
 - added register shifting instructions SHR and SHL
 - added flow control instruction JMP
+- added condition inspection via CMP
 
 ###v0.01
 - hosted on github

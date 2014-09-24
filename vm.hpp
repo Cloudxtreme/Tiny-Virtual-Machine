@@ -15,10 +15,16 @@
 #define INS_SHL 5
 #define INS_SHR 6
 #define INS_JMP 7
+#define INS_CMP 8
 
 #define HS_USER 1
 #define HS_OUT_BOUNDS 2
 #define HS_UNKNOWN_COMMAND 3
+
+#define CMP_NONE 0
+#define CMP_LT 1
+#define CMP_EQ 2
+#define CMP_GT 3
 
 struct BytecodeException
 {
@@ -35,6 +41,8 @@ private:
 
 	unsigned int pc;
 	unsigned int sp;
+
+	unsigned char cmp_flag;
 
 	unsigned int halt_signal;	
 public:

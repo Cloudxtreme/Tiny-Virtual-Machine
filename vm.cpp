@@ -13,6 +13,8 @@ VirtualMachine::VirtualMachine()
 	pc = 0;
 	sp = 0;
 
+	cmp_flag = CMP_NONE;
+
 	halt_signal = 0;
 }
 bool VirtualMachine::LoadProgram(char* data, unsigned int length)
@@ -250,6 +252,52 @@ void VirtualMachine::ParseInstruction(char type, unsigned int argument_address)
 			}				
 
 			pc = address;
+
+			break;
+		}
+		case INS_CMP:
+		{
+			if(pc + 2 >= MEMORY_SIZE)
+			{
+				halt_signal = HS_OUT_BOUNDS;
+				break;
+			}
+
+			char register_1, register_2;
+
+			try
+			{
+				register_1 = GetByte(argument_address);			
+				register_2 = GetByte(argument_address+1);							
+			}
+			catch(BytecodeException exception)
+			{
+				halt_signal = exception.code;
+				break;
+			}
+
+			if(register_1 < 0 || register_1 >= NUM_REGISTERS
+				|| register_2 < 0 || register_2 >= NUM_REGISTERS)
+			{
+				halt_signal = HS_OUT_BOUNDS;
+				break;
+			}
+
+			unsigned int value_1, value_2;
+
+			value_1 = registers[register_1];
+			value_2 = registers[register_2];
+
+			if(value_1 < value_2)
+				cmp_flag = CMP_LT;
+			else if(value_1 > value_2)
+				cmp_flag = CMP_GT;
+			else
+				cmp_flag = CMP_EQ;
+
+			std::cout << "cmp_flag: " << cmp_flag << std::endl;
+
+			pc += 3;
 
 			break;
 		}
