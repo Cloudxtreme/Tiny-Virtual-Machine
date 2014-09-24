@@ -40,7 +40,7 @@ BytecodeGenerator::BytecodeGenerator()
 {
 	std::map<std::string, unsigned int> labels;
 	std::map<unsigned int, std::string> jumps;
-
+	
 	std::vector<char> bytes;	
  
 	std::string line;
@@ -97,6 +97,35 @@ BytecodeGenerator::BytecodeGenerator()
 		else if (tokens[0].compare("HALT") == 0)
 		{
 			instruction_type = INS_HALT;
+		}
+		else if (tokens[0].compare("DB") == 0)
+		{
+			if(tokens.size() != 2 + 1)
+				throw SourceException(EXCEPTION_INVALID_ARGUMENTS, line_number);
+
+			unsigned int address = atoi(tokens[1].c_str());
+			unsigned int value = atoi(tokens[2].c_str());
+
+			constants[address] = value;
+
+			std::cout << (unsigned int)value << std::endl;
+
+			continue;
+		}
+		else if (tokens[0].compare("DW") == 0)
+		{
+			if(tokens.size() != 2 + 1)
+				throw SourceException(EXCEPTION_INVALID_ARGUMENTS, line_number);
+
+			unsigned int address = atoi(tokens[1].c_str());
+			unsigned int value = atoi(tokens[2].c_str());
+
+			constants[address] = value;
+			constants[address+1] = value >> 8;
+			constants[address+2] = value >> 16;
+			constants[address+3] = value >> 24;
+
+			continue;
 		}
 		else
 		{
@@ -264,15 +293,8 @@ BytecodeGenerator::BytecodeGenerator()
 	bytecode = std::unique_ptr<char[]>(new char[bytes.size()]);
 	for(int i=0; i<bytes.size(); i++)
 	{
-		bytecode[i] = bytes[i];
-
-		#ifdef DEBUG
-			std::cout << (int)bytes[i] << "|"; 
-		#endif
-	}
-	#ifdef DEBUG
-		std::cout << std::endl;
-	#endif
+		bytecode[i] = bytes[i];		
+	}	
 
 	bytecode_size = bytes.size();
 }
@@ -283,4 +305,8 @@ char* BytecodeGenerator::GetBytecode()
 unsigned int BytecodeGenerator::GetBytecodeSize()
 {
 	return bytecode_size;
+}
+std::map<unsigned int, char>*  BytecodeGenerator::GetConstants()
+{
+	return &constants;
 }

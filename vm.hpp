@@ -2,6 +2,9 @@
 #define VM_H
 #include <iostream>
 #include <memory>
+#include <map>
+
+//#define DEBUG
 
 #define MEMORY_SIZE 2048
 
@@ -56,7 +59,7 @@ private:
 public:
 	VirtualMachine();
 
-	bool LoadProgram(char* data, unsigned int length);
+	bool LoadProgram(char* data, unsigned int length, std::map<unsigned int, char>* constants);
 	void Run();
 
 	void Cycle();
@@ -71,6 +74,9 @@ public:
 
 	bool AddressInBounds(unsigned int address);
 	bool AddressRangeInBounds(unsigned int address, unsigned int length);
+
+	char* TrackByte(unsigned int address);
+	int* TrackWord(unsigned int address);
 };
 
 #endif

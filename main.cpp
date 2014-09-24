@@ -15,15 +15,15 @@ int main(int argc, char** args)
 		return 1;
 	}
 
-	VirtualMachine vm;
+	VirtualMachine vm;	
 
-	vm.SetWord(512, 1000);
-	vm.SetWord(612, 1004);
-	vm.SetWord(2, 1008);
+	vm.LoadProgram(g->GetBytecode(), g->GetBytecodeSize(), g->GetConstants());
 
-	vm.LoadProgram(g->GetBytecode(), g->GetBytecodeSize());
+	char* result = vm.TrackByte(2000);
 
 	vm.Run();
+
+	std::cout << "The value of tracked variable is: " << (int)*result << std::endl;
 
 	return 0;	
 }

@@ -1,6 +1,7 @@
 #ifndef BYTEGEN_HPP
 #define BYTEGEN_HPP
 #include <memory>
+#include <map>
 #include <iostream>
 
 //#define DEBUG
@@ -24,11 +25,14 @@ class BytecodeGenerator
 private:
 	std::unique_ptr<char[]> bytecode;
 	unsigned int bytecode_size;
+
+	std::map<unsigned int, char> constants;
 public:
 	BytecodeGenerator();
 
 	char* GetBytecode();
 	unsigned int GetBytecodeSize();
+	std::map<unsigned int, char>*  GetConstants();
 };
 
 #endif
