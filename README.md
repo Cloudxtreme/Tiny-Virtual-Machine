@@ -23,8 +23,10 @@ bin/main.out < bin/source.txt
 Current features:
 - source file parsing and conversion into bytecode
 - bytecode execution
-- LOAD, STORE, ADD, SUB and HALT instructions
-- flow control instruction with conditionals
+- LOAD, STORE, ADD, SUB, SHR, SHL and HALT instructions
+- flow control instruction with conditionals (JMP, CMP)
+- pointers
+- labels instead of raw addresses (in source code)
 - error handling during both execution and parsing (needs more work)
 
 To do:
@@ -37,6 +39,7 @@ To do:
 ###v0.03
 - added support for loading data from address stored in a register
 - JMP now works with conditions which are set via CMP instruction
+- Labels! Raw address data no longer needed for JMPs
 
 ###v0.02
 - added register shifting instructions SHR and SHL
@@ -45,4 +48,5 @@ To do:
 
 ###v0.01
 - hosted on github
+- didn't exactly keep a log before this
 
