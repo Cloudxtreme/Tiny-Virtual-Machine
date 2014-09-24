@@ -199,6 +199,9 @@ BytecodeGenerator::BytecodeGenerator()
 		if(check != labels.end())
 		{
 			bytes[it->first+1] = check->second;
+			bytes[it->first+2] = check->second >> 8;
+			bytes[it->first+3] = check->second >> 16;
+			bytes[it->first+4] = check->second >> 24;
 		}
 		else
 		{
