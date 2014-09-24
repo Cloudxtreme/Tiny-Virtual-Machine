@@ -43,6 +43,9 @@ void VirtualMachine::Run()
 		case HS_UNKNOWN_COMMAND:
 			std::cout << "TERMINATED: UNKNOWN COMMAND" << std::endl;
 			break;
+		case HS_INVALID_ARGUMENT:
+			std::cout << "TERMINATED: INVALID ARGUMENT" << std::endl;
+			break;
 		case HS_USER:
 			std::cout << "Program terminated naturally." << std::endl;
 			break;
@@ -70,25 +73,31 @@ void VirtualMachine::ParseInstruction(char type, unsigned int argument_address)
 	{
 		case INS_LOAD: case INS_STORE:
 		{			
-			if(pc + 5 >= MEMORY_SIZE)
+			if(pc + 6 >= MEMORY_SIZE)
 			{
 				halt_signal = HS_OUT_BOUNDS;
 				break;
 			}
 
 			int register_index;
+			char mode;
 			unsigned int address;
 
 			try
 			{
 				register_index = GetByte(argument_address);
-				address = GetWord(argument_address+1);
+				mode = GetByte(argument_address+1);
+
+				if(mode == 0)
+					address = GetWord(argument_address+2);
+				else
+					address = GetByte(argument_address+2);
 			}
 			catch(BytecodeException exception)
 			{
 				halt_signal = exception.code;
 				break;
-			}
+			}			
 
 			if(register_index < 0 || register_index >= NUM_REGISTERS || address < 0 || address >= MEMORY_SIZE)
 			{
@@ -102,7 +111,15 @@ void VirtualMachine::ParseInstruction(char type, unsigned int argument_address)
 			{
 				try
 				{
-					value = GetWord(address);
+					if(mode == 0)
+					{
+						value = GetWord(address);
+					}
+					else
+					{
+						unsigned int value_address = registers[(char)address];
+						value = GetWord(value_address);
+					}
 				}
 				catch(BytecodeException exception)
 				{
@@ -121,7 +138,15 @@ void VirtualMachine::ParseInstruction(char type, unsigned int argument_address)
 
 				try
 				{
-					SetWord(value, address);
+					if(mode == 0)
+					{
+						SetWord(value, address);
+					}
+					else
+					{
+						unsigned int value_address = registers[(char)address];
+						SetWord(value, value_address);
+					}
 				}
 				catch(BytecodeException exception)
 				{
@@ -133,8 +158,8 @@ void VirtualMachine::ParseInstruction(char type, unsigned int argument_address)
 				std::cout << "Stored value " << value << std::endl;
 			}
 
-			//1 byte for the type, 1 for register, 4 for address
-			pc += 6;
+			//1 byte for the type, 1 for register, 1 for mode, 4 for address
+			pc += 7;
 			
 			break;
 		}	
@@ -233,25 +258,69 @@ void VirtualMachine::ParseInstruction(char type, unsigned int argument_address)
 		}	
 		case INS_JMP:
 		{
-			if(pc + 1 >= MEMORY_SIZE)
+			if(pc + 5 >= MEMORY_SIZE)
 			{
 				halt_signal = HS_OUT_BOUNDS;
 				break;
 			}
 
 			unsigned int address;
+			char condition;
 
 			try
 			{
-				address = GetWord(argument_address);				
+				address = GetWord(argument_address);		
+				condition = GetByte(argument_address+4);		
 			}
 			catch(BytecodeException exception)
 			{
 				halt_signal = exception.code;
 				break;
-			}				
+			}		
 
-			pc = address;
+			bool condition_fulfilled = false;
+			bool invalid_condition = false;	
+
+			switch(condition)
+			{
+				case COND_NONE:
+					condition_fulfilled = true;
+					break;
+				case COND_LT:
+					if(cmp_flag == CMP_LT)
+						condition_fulfilled = true;
+					break;
+				case COND_GT:
+					if(cmp_flag == CMP_GT)
+						condition_fulfilled = true;
+					break;
+				case COND_LE:
+					if(cmp_flag == CMP_LT || cmp_flag == CMP_EQ)
+						condition_fulfilled = true;
+					break;
+				case COND_GE:
+					if(cmp_flag == CMP_GT || cmp_flag == CMP_EQ)
+						condition_fulfilled = true;
+					break;
+				case COND_EQ:
+					if(cmp_flag == CMP_EQ)
+						condition_fulfilled = true;
+					break;
+				default:
+					invalid_condition = true;
+					break;
+			}
+
+			if(invalid_condition)
+			{
+				halt_signal = HS_INVALID_ARGUMENT;
+				break;
+			}
+
+			if(condition_fulfilled)
+				pc = address;
+			else
+				pc += 6;
 
 			break;
 		}

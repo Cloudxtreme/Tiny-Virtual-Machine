@@ -17,8 +17,8 @@ int main(int argc, char** args)
 
 	VirtualMachine vm;
 
-	vm.SetWord(24, 1000);
-	vm.SetWord(6, 1004);
+	vm.SetWord(512, 1000);
+	vm.SetWord(612, 1004);
 	vm.SetWord(2, 1008);
 
 	vm.LoadProgram(g->GetBytecode(), g->GetBytecodeSize());

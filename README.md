@@ -16,17 +16,19 @@ Current features:
 - source file parsing and conversion into bytecode
 - bytecode execution
 - LOAD, STORE, ADD, SUB and HALT instructions
-- flow control instruction
+- flow control instruction with conditionals
 - error handling during both execution and parsing (needs more work)
 
 To do:
 - find a way to handle endianess
-- conditional flow control instructions via flags
-- pointers
 - procedures
 - embedding in C++ programs
 
 ##Log
+###v0.03
+- added support for loading data from address stored in a register
+- JMP now works with conditions which are set via CMP instruction
+
 ###v0.02
 - added register shifting instructions SHR and SHL
 - added flow control instruction JMP

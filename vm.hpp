@@ -20,11 +20,19 @@
 #define HS_USER 1
 #define HS_OUT_BOUNDS 2
 #define HS_UNKNOWN_COMMAND 3
+#define HS_INVALID_ARGUMENT 4
 
 #define CMP_NONE 0
 #define CMP_LT 1
 #define CMP_EQ 2
 #define CMP_GT 3
+
+#define COND_NONE 0
+#define COND_LT 1
+#define COND_EQ 2
+#define COND_GT 3
+#define COND_LE 4
+#define COND_GE 5
 
 struct BytecodeException
 {

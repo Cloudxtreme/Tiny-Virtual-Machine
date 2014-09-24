@@ -122,12 +122,25 @@ BytecodeGenerator::BytecodeGenerator()
 					throw SourceException(EXCEPTION_INVALID_ARGUMENTS, line_number);
 
 				char register_index = 0; //token[1] tostring
+				char mode = 0;
 				unsigned int address = 0; //token[2] tostring
 
-				register_index = atoi(tokens[1].c_str());
-				address = atoi(tokens[2].c_str());
+				register_index = atoi(tokens[1].c_str());						
 
-				bytes.push_back(register_index);			
+				if(tokens[2].length() > 2 && tokens[2].at(0) == '(' && tokens[2].at(tokens[2].length()-1) == ')')
+				{
+					address = atoi(tokens[2].substr(1, tokens[2].length()-2).c_str());					
+					mode = 1;
+				}
+				else
+				{
+					address = atoi(tokens[2].c_str());
+					mode = 0;
+				}
+
+				bytes.push_back(register_index);	
+
+				bytes.push_back(mode);			
 				
 				bytes.push_back(address); 
 				bytes.push_back(address >> 8); 
@@ -180,7 +193,7 @@ BytecodeGenerator::BytecodeGenerator()
 			}
 			case INS_JMP: 
 			{
-				if(tokens.size() != 1 + 1)
+				if(tokens.size() != 1 + 1 && tokens.size() != 2 + 1)
 					throw SourceException(EXCEPTION_INVALID_ARGUMENTS, line_number);
 
 				jumps[bytes.size()-1] = tokens[1];	
@@ -190,7 +203,28 @@ BytecodeGenerator::BytecodeGenerator()
 				bytes.push_back(address); 
 				bytes.push_back(address >> 8); 
 				bytes.push_back(address >> 16);
-				bytes.push_back(address >> 24);				
+				bytes.push_back(address >> 24);	
+
+				char condition = COND_NONE;
+
+				//if we have a condition specified
+				if(tokens.size() == 2 + 1)
+				{
+					std::string cond = tokens[2];
+
+					if(tokens[2].compare("EQ") == 0)
+						condition = COND_EQ;
+					if(tokens[2].compare("LT") == 0)
+						condition = COND_LT;
+					if(tokens[2].compare("GT") == 0)
+						condition = COND_GT;
+					if(tokens[2].compare("LE") == 0)
+						condition = COND_LE;
+					if(tokens[2].compare("GE") == 0)
+						condition = COND_GE;
+				}	
+
+				bytes.push_back(condition);		
 				
 				break;
 			}
