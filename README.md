@@ -15,6 +15,7 @@ If something bad happens, like trying to read from a memory address that is out 
 v0.02
 ===================
 - added register shifting instructions SHR and SHL
+- added flow control instruction JMP
 
 v0.01
 ===================

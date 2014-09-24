@@ -3,7 +3,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
-#include <regex>
+#include <map>
 #include "vm.hpp"
 
 SourceException::SourceException(unsigned int code, std::string data)
@@ -38,6 +38,9 @@ std::string SourceException::Get()
 
 BytecodeGenerator::BytecodeGenerator()
 {
+	std::map<std::string, unsigned int> labels;
+	std::map<unsigned int, std::string> jumps;
+
 	std::vector<char> bytes;	
  
 	std::string line;
@@ -93,7 +96,15 @@ BytecodeGenerator::BytecodeGenerator()
 		}
 		else
 		{
-			throw SourceException(EXCEPTION_UNKNOWN_COMMAND, tokens[0]);
+			//if the parsed token is a label
+			if(tokens[0].length() > 0 && tokens[0].at(tokens[0].length()-1) == ':')
+			{
+				//the size of bytes array is actually the address of the next instruction
+				labels[tokens[0].substr(0, tokens[0].length()-1)] = bytes.size();				
+				continue;
+			}
+			else
+				throw SourceException(EXCEPTION_UNKNOWN_COMMAND, tokens[0]);
 		}
 
 		bytes.push_back(instruction_type);
@@ -153,7 +164,9 @@ BytecodeGenerator::BytecodeGenerator()
 			case INS_JMP: 
 			{
 				if(tokens.size() != 1 + 1)
-					throw SourceException(EXCEPTION_INVALID_ARGUMENTS, line_number);						
+					throw SourceException(EXCEPTION_INVALID_ARGUMENTS, line_number);
+
+				jumps[bytes.size()-1] = tokens[1];	
 
 				unsigned int address = atoi(tokens[1].c_str());				
 				
@@ -177,6 +190,22 @@ BytecodeGenerator::BytecodeGenerator()
 		}	
 		line_number++;	
 	}
+
+	std::map<unsigned int, std::string>::iterator it;
+	for(it = jumps.begin(); it != jumps.end(); it++)
+	{
+		std::map<std::string, unsigned int>::iterator check;
+		check = labels.find(it->second);
+		if(check != labels.end())
+		{
+			bytes[it->first+1] = check->second;
+		}
+		else
+		{
+			std::cout << "No such label: " << it->second << std::endl;
+		}
+	}
+
 
 	bytecode = std::unique_ptr<char[]>(new char[bytes.size()]);
 	for(int i=0; i<bytes.size(); i++)
